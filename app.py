@@ -22,6 +22,7 @@ MQTT_TOPIC_LIGHT = "home/light"
 MQTT_TOPIC_FAN = "home/fan"
 MQTT_TOPIC_THERMOSTAT = "home/thermostat"
 MQTT_TOPIC_DOOR = "home/door"
+MQTT_TOPIC_OWNER = "home/owner"
 
 @app.route('/')
 def index():
@@ -160,9 +161,22 @@ def simulate_door_job():
     except Exception as e:
         logger.error(f"Scheduled: Error simulating door: {e}")
 
+def simulate_owner_out():
+    """Job to simulate owner state periodically."""
+    owner_state = random.choice([True, False])
+    # owner_state = True
+    payload = json.dumps({"owner out": owner_state})
+    try:
+        publish.single(MQTT_TOPIC_OWNER, payload=payload, hostname=MQTT_BROKER, port=MQTT_PORT)
+        logger.info(f"Scheduled: Published owner state: {payload} to {MQTT_TOPIC_OWNER}")
+    except Exception as e:
+        logger.error(f"Scheduled: Error simulating door: {e}")
+
 # Initialize scheduler
 scheduler = BackgroundScheduler()
 scheduler.add_job(simulate_door_job, 'interval', minutes=5)  # Run every 5 minutes
+scheduler.add_job(simulate_owner_out, 'interval', minutes=1)  # Run every 5 minutes
+
 scheduler.start()
 
 if __name__ == '__main__':
