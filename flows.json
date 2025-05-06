@@ -258,17 +258,6 @@
         ]
     },
     {
-        "id": "35f17b95f746f8d3",
-        "type": "pushover api",
-        "z": "e69adaf4e7d12b79",
-        "keys": "b3c1dafcb5bd072b",
-        "title": "Home door Open",
-        "name": "Send Notification",
-        "x": 690,
-        "y": 280,
-        "wires": []
-    },
-    {
         "id": "06c0704eb19006c2",
         "type": "mqtt in",
         "z": "e69adaf4e7d12b79",
@@ -285,7 +274,8 @@
         "y": 360,
         "wires": [
             [
-                "56413b701ade2221"
+                "1764566bbdd7406b",
+                "e5100ffa451145a1"
             ]
         ]
     },
@@ -294,20 +284,31 @@
         "type": "function",
         "z": "e69adaf4e7d12b79",
         "name": "function 4",
-        "func": "// Get current time\nlet now = new Date();\nlet hours = now.getHours();\n\nlet isOwnerOut = msg.payload.hasOwnProperty('owner out') && msg.payload['owner out'] === true;\n\n\n// Check if door is open\nlet motion = true;\n\n// Format the current time\nlet timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });\n\n// Proceed only if both conditions are met\nif (isOwnerOut && motion) {\n    msg.payload = `Motion Detected in house while owner is out at  ${timeString}!`;\n    msg.title = \"Door Alert\";\n    msg.priority = 0;\n    return msg;\n} else {\n    return null;\n}",
+        "func": "\nlet userAway = global.get(\"userAway\") || false;\n// let userAway = true\n\nif (msg.payload.toString().includes(\"motion\") && userAway) {\n    msg.payload = \"🚨 Movement detected while you're away!\";\n    return msg;\n}\nreturn null;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 360,
+        "x": 500,
+        "y": 380,
         "wires": [
             [
                 "366ad3f5b39ce2b5"
             ]
         ]
+    },
+    {
+        "id": "35f17b95f746f8d3",
+        "type": "pushover api",
+        "z": "e69adaf4e7d12b79",
+        "keys": "b3c1dafcb5bd072b",
+        "title": "Home door Open",
+        "name": "Send Notification",
+        "x": 690,
+        "y": 280,
+        "wires": []
     },
     {
         "id": "366ad3f5b39ce2b5",
@@ -316,8 +317,84 @@
         "keys": "b3c1dafcb5bd072b",
         "title": "Motion detected While owner is out ",
         "name": "Send Notification",
-        "x": 650,
-        "y": 360,
+        "x": 810,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "10cbef8a10c6762a",
+        "type": "exec",
+        "z": "e69adaf4e7d12b79",
+        "command": "python C:\\Users\\HP\\Desktop\\webhook\\motion_detector.py",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Motion Detection",
+        "x": 580,
+        "y": 500,
+        "wires": [
+            [
+                "56413b701ade2221"
+            ],
+            [
+                "3aebc3e9d836fa6a"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1764566bbdd7406b",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "e5100ffa451145a1",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "Set User Away",
+        "func": "// Ensure payload is parsed JSON\nlet payload = msg.payload;\nif (typeof payload === \"string\") {\n    try {\n        payload = JSON.parse(payload);\n    } catch (e) {\n        node.error(\"Invalid JSON in payload\", msg);\n        return null;\n    }\n}\n\n// Extract owner status\nconst ownerOut = payload[\"owner out\"];\nglobal.set(\"userAway\", ownerOut === true);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "10cbef8a10c6762a"
+            ]
+        ]
+    },
+    {
+        "id": "3aebc3e9d836fa6a",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 600,
         "wires": []
     },
     {
