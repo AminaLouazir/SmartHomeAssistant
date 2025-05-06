@@ -35,6 +35,7 @@ def webhook():
     logger.debug(f"Received request headers: {dict(request.headers)}")
     try:
         request_text = request.get_data(as_text=True)
+        # print("request_text",request_text)
         logger.debug(f"Raw request body: {request_text}")
         req = json.loads(request_text) if request_text else {}
         logger.info(f"Parsed JSON: {json.dumps(req, indent=2)}")
@@ -67,7 +68,7 @@ def process_intent(intent, parameters):
         if intent == "TurnOnLight":
             try:
                 publish.single(MQTT_TOPIC_LIGHT, payload="ON", hostname=MQTT_BROKER, port=MQTT_PORT)
-                logger.info("Published 'ON' to home/light")
+                print("Published 'ON' to home/light")
             except Exception as mqtt_err:
                 logger.warning(f"MQTT publish failed (continuing anyway): {mqtt_err}")
             return "Turning on the light."
@@ -137,6 +138,7 @@ def test():
         'message': 'Smart Home webhook is operational. Send a POST request to test JSON handling.'
     })
 
+
 # @app.route('/simulate/door', methods=['POST'])
 # def simulate_door():
 #     """Simulate door/window sensor."""
@@ -164,7 +166,7 @@ def simulate_door_job():
 def simulate_owner_out():
     """Job to simulate owner state periodically."""
     owner_state = random.choice([True, False])
-    # owner_state = True
+    # owner_state = True 
     payload = json.dumps({"owner out": owner_state})
     try:
         publish.single(MQTT_TOPIC_OWNER, payload=payload, hostname=MQTT_BROKER, port=MQTT_PORT)
@@ -174,7 +176,7 @@ def simulate_owner_out():
 
 # Initialize scheduler
 scheduler = BackgroundScheduler()
-scheduler.add_job(simulate_door_job, 'interval', minutes=5)  # Run every 5 minutes
+scheduler.add_job(simulate_door_job, 'interval', minutes=1)  # Run every 5 minutes
 scheduler.add_job(simulate_owner_out, 'interval', minutes=1)  # Run every 5 minutes
 
 scheduler.start()
