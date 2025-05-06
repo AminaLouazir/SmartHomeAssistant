@@ -1,13 +1,271 @@
 [
     {
-        "id": "366ad3f5b39ce2b5",
+        "id": "e69adaf4e7d12b79",
+        "type": "tab",
+        "label": "Flux 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a8b10f81d2127e47",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "topic": "home/light",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "0690b4c2f15ae480"
+            ]
+        ]
+    },
+    {
+        "id": "0690b4c2f15ae480",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "function 1",
+        "func": "if (msg.payload === \"ON\") {\n    msg.payload = \"The light is now ON!\";\n} else if (msg.payload === \"OFF\") {\n    msg.payload = \"The light is now OFF!\";\n} else {\n    msg.payload = \"Invalid command for the light.\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 40,
+        "wires": [
+            [
+                "044d5ab09ef8d814"
+            ]
+        ]
+    },
+    {
+        "id": "044d5ab09ef8d814",
+        "type": "ui_led",
+        "z": "e69adaf4e7d12b79",
+        "order": 0,
+        "group": "3b65080100facd85",
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#008000",
+                "value": "The light is now ON!",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "",
+        "x": 710,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "54943e93657ee9e7",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "topic": "home/fan",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "618e50e5405d95a4"
+            ]
+        ]
+    },
+    {
+        "id": "3ab78e306b9449c4",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "topic": "home/thermostat",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 200,
+        "wires": [
+            [
+                "28d555063f1c6a55"
+            ]
+        ]
+    },
+    {
+        "id": "618e50e5405d95a4",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "function 2",
+        "func": "if (msg.payload === \"ON\") {\n    msg.payload = \"The fan is now ON!\";\n} else if (msg.payload === \"OFF\") {\n    msg.payload = \"The fan is now OFF!\";\n} else {\n    msg.payload = \"Invalid command for the light.\";\n}\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "f361fc43c5175645"
+            ]
+        ]
+    },
+    {
+        "id": "f361fc43c5175645",
+        "type": "ui_switch",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "label": "switch",
+        "tooltip": "",
+        "group": "23d17ff89b43e0b8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "The fan is now ON!",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 710,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a5f9c0d9c15c1a2b",
+        "type": "ui_gauge",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "group": "abac1b29b6dfb40a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "gauge",
+        "label": "ºC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "30",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 710,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "28d555063f1c6a55",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "function 3",
+        "func": "msg.payload = Number(msg.payload); // Convert to a number if it's a string\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 200,
+        "wires": [
+            [
+                "a5f9c0d9c15c1a2b"
+            ]
+        ]
+    },
+    {
+        "id": "1f9c1b7028919988",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "topic": "home/door",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 280,
+        "wires": [
+            [
+                "1daf2401978f4779"
+            ]
+        ]
+    },
+    {
+        "id": "1daf2401978f4779",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "function 5",
+        "func": "// Get current time\nlet now = new Date();\nlet hours = now.getHours();\n\n// Check if time is between 12:00 AM (0) and 6:00 AM (6)\n// let isNightTime = hours >= 0 && hours < 6;\nlet isNightTime = true; \n\n// Check if door is open\nlet isDoorOpen = msg.payload.open === true;\n\n// Format the current time\nlet timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });\n\n// Proceed only if both conditions are met\nif (isDoorOpen && isNightTime) {\n    msg.payload = `The door was opened at ${timeString}!`;\n    msg.title = \"Door Alert\";\n    msg.priority = 0;\n    return msg;\n} else {\n    return null;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 280,
+        "wires": [
+            [
+                "35f17b95f746f8d3"
+            ]
+        ]
+    },
+    {
+        "id": "35f17b95f746f8d3",
         "type": "pushover api",
         "z": "e69adaf4e7d12b79",
         "keys": "b3c1dafcb5bd072b",
-        "title": "Motion detected While owner is out ",
+        "title": "Home door Open",
         "name": "Send Notification",
-        "x": 790,
-        "y": 340,
+        "x": 690,
+        "y": 280,
         "wires": []
     },
     {
@@ -24,7 +282,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 190,
-        "y": 340,
+        "y": 360,
         "wires": [
             [
                 "56413b701ade2221"
@@ -43,8 +301,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 540,
-        "y": 340,
+        "x": 400,
+        "y": 360,
         "wires": [
             [
                 "366ad3f5b39ce2b5"
@@ -52,9 +310,15 @@
         ]
     },
     {
-        "id": "b3c1dafcb5bd072b",
-        "type": "pushover-keys",
-        "name": ""
+        "id": "366ad3f5b39ce2b5",
+        "type": "pushover api",
+        "z": "e69adaf4e7d12b79",
+        "keys": "b3c1dafcb5bd072b",
+        "title": "Motion detected While owner is out ",
+        "name": "Send Notification",
+        "x": 650,
+        "y": 360,
+        "wires": []
     },
     {
         "id": "62239cfd406d2876",
@@ -86,5 +350,51 @@
         "willMsg": {},
         "userProps": "",
         "sessionExpiry": ""
+    },
+    {
+        "id": "3b65080100facd85",
+        "type": "ui_group",
+        "name": "Lights",
+        "tab": "33bc5f8320ff77d1",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "23d17ff89b43e0b8",
+        "type": "ui_group",
+        "name": "Fan",
+        "tab": "33bc5f8320ff77d1",
+        "order": 4,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "abac1b29b6dfb40a",
+        "type": "ui_group",
+        "name": "Temperature",
+        "tab": "33bc5f8320ff77d1",
+        "order": 3,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b3c1dafcb5bd072b",
+        "type": "pushover-keys",
+        "name": ""
+    },
+    {
+        "id": "33bc5f8320ff77d1",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
     }
 ]
