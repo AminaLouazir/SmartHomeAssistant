@@ -261,6 +261,7 @@
         "id": "06c0704eb19006c2",
         "type": "mqtt in",
         "z": "e69adaf4e7d12b79",
+        "d": true,
         "name": "",
         "topic": "home/owner",
         "qos": "2",
@@ -270,32 +271,12 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 190,
-        "y": 360,
+        "x": 170,
+        "y": 560,
         "wires": [
             [
                 "1764566bbdd7406b",
                 "e5100ffa451145a1"
-            ]
-        ]
-    },
-    {
-        "id": "56413b701ade2221",
-        "type": "function",
-        "z": "e69adaf4e7d12b79",
-        "name": "function 4",
-        "func": "\nlet userAway = global.get(\"userAway\") || false;\n// let userAway = true\n\nif (msg.payload.toString().includes(\"motion\") && userAway) {\n    msg.payload = \"🚨 Movement detected while you're away!\";\n    return msg;\n}\nreturn null;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 500,
-        "y": 380,
-        "wires": [
-            [
-                "366ad3f5b39ce2b5"
             ]
         ]
     },
@@ -311,21 +292,11 @@
         "wires": []
     },
     {
-        "id": "366ad3f5b39ce2b5",
-        "type": "pushover api",
-        "z": "e69adaf4e7d12b79",
-        "keys": "b3c1dafcb5bd072b",
-        "title": "Motion detected While owner is out ",
-        "name": "Send Notification",
-        "x": 810,
-        "y": 400,
-        "wires": []
-    },
-    {
         "id": "10cbef8a10c6762a",
         "type": "exec",
         "z": "e69adaf4e7d12b79",
-        "command": "python C:\\Users\\HP\\Desktop\\webhook\\motion_detector.py",
+        "d": true,
+        "command": "python C:\\Users\\HP\\Desktop\\webhook\\motion_monitor.py",
         "addpay": "",
         "append": "",
         "useSpawn": "false",
@@ -333,12 +304,10 @@
         "winHide": false,
         "oldrc": false,
         "name": "Run Motion Detection",
-        "x": 580,
-        "y": 500,
+        "x": 680,
+        "y": 600,
         "wires": [
-            [
-                "56413b701ade2221"
-            ],
+            [],
             [
                 "3aebc3e9d836fa6a"
             ],
@@ -349,6 +318,7 @@
         "id": "1764566bbdd7406b",
         "type": "debug",
         "z": "e69adaf4e7d12b79",
+        "d": true,
         "name": "debug 2",
         "active": true,
         "tosidebar": true,
@@ -357,27 +327,28 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 200,
-        "y": 540,
+        "x": 240,
+        "y": 660,
         "wires": []
     },
     {
         "id": "e5100ffa451145a1",
         "type": "function",
         "z": "e69adaf4e7d12b79",
+        "d": true,
         "name": "Set User Away",
-        "func": "// Ensure payload is parsed JSON\nlet payload = msg.payload;\nif (typeof payload === \"string\") {\n    try {\n        payload = JSON.parse(payload);\n    } catch (e) {\n        node.error(\"Invalid JSON in payload\", msg);\n        return null;\n    }\n}\n\n// Extract owner status\nconst ownerOut = payload[\"owner out\"];\nglobal.set(\"userAway\", ownerOut === true);\nreturn msg;\n",
+        "func": "// Ensure payload is parsed JSON\nlet payload = msg.payload;\nif (typeof payload === \"string\") {\ntry {\npayload = JSON.parse(payload);\n} catch (e) {\nnode.error(\"Invalid JSON in payload\", msg);\nreturn null;\n}\n}\n\nconst ownerOut = payload[\"owner out\"];\nconst ownerIn = payload[\"owner in\"];\n\nif (ownerOut === true) {\nglobal.set(\"userAway\", true);\nnode.warn(\"Owner is away\");\nreturn { payload: \"start\" }; // signal to start camera\n} else if (ownerIn === true) {\nglobal.set(\"userAway\", false);\nnode.warn(\"Owner is home\");\nreturn { payload: \"stop\" }; // signal to stop camera (future use)\n}\n\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
-        "y": 460,
+        "x": 420,
+        "y": 580,
         "wires": [
             [
-                "10cbef8a10c6762a"
+                "58adb5997467c8f5"
             ]
         ]
     },
@@ -385,6 +356,7 @@
         "id": "3aebc3e9d836fa6a",
         "type": "debug",
         "z": "e69adaf4e7d12b79",
+        "d": true,
         "name": "debug 3",
         "active": true,
         "tosidebar": true,
@@ -393,8 +365,229 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 800,
-        "y": 600,
+        "x": 840,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "e9e255caa4828bc8",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "home/alert",
+        "topic": "home/alert",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 840,
+        "wires": [
+            [
+                "bac0bfe7676657fd",
+                "966f4c3e08cbac0a"
+            ]
+        ]
+    },
+    {
+        "id": "bac0bfe7676657fd",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "check if user away",
+        "func": "node.warn(\"Received payload: \" + msg.payload.toString());\n\nlet userAway = true;\n\nif (msg.payload.toString().includes(\"motion\") && userAway) {\n    msg.payload = \"🚨 Movement detected while you're away!\";\n    node.warn(\"we are in check user\");\n    return msg;\n}\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 860,
+        "wires": [
+            [
+                "366ad3f5b39ce2b5"
+            ]
+        ]
+    },
+    {
+        "id": "3245b5eb6f90553f",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 240,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "966f4c3e08cbac0a",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "58adb5997467c8f5",
+        "type": "switch",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "Motion Script Trigger",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "start",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 780,
+        "wires": [
+            [
+                "10cbef8a10c6762a",
+                "c138877731c9a71e"
+            ]
+        ]
+    },
+    {
+        "id": "366ad3f5b39ce2b5",
+        "type": "pushover api",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "keys": "b3c1dafcb5bd072b",
+        "title": "Motion detected While owner is out ",
+        "name": "Send Notification",
+        "x": 810,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "c138877731c9a71e",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "d": true,
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "621679b6c28d9554",
+        "type": "mqtt in",
+        "z": "e69adaf4e7d12b79",
+        "name": "",
+        "topic": "home/alert",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "62239cfd406d2876",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 380,
+        "wires": [
+            [
+                "502649220a3d7501",
+                "4024b9f7e751493e"
+            ]
+        ]
+    },
+    {
+        "id": "502649220a3d7501",
+        "type": "function",
+        "z": "e69adaf4e7d12b79",
+        "name": "Set User Away",
+        "func": "msg.title = \"🏠 Motion Detected\";\nmsg.message = \"Motion detected at home while you're away!\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 380,
+        "wires": [
+            [
+                "60e056dd0601d7d8",
+                "68f30a68d395ff0e"
+            ]
+        ]
+    },
+    {
+        "id": "60e056dd0601d7d8",
+        "type": "pushover api",
+        "z": "e69adaf4e7d12b79",
+        "keys": "b3c1dafcb5bd072b",
+        "title": "Motion detected While owner is out ",
+        "name": "Send Notification",
+        "x": 730,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "4024b9f7e751493e",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "68f30a68d395ff0e",
+        "type": "debug",
+        "z": "e69adaf4e7d12b79",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 520,
         "wires": []
     },
     {
